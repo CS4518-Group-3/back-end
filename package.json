@@ -1,6 +1,6 @@
 {
   "name": "artsyapp-back-end",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "app.js",
   "repository": "https://github.com/CS4518-Group-3/back-end.git",
   "author": "Bryce Corbitt <bscorbitt@wpi.edu>",
@@ -15,5 +15,9 @@
     "express-session": "^1.17.1",
     "google-auth-library": "^6.1.1",
     "mongoose": "^5.10.8"
+  },
+  "devDependencies": {
+    "express-swagger-generator": "^1.1.17",
+    "swagger-ui-express": "^4.1.4"
   }
 }

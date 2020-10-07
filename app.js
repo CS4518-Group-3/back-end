@@ -31,6 +31,10 @@ function launch() {
 	// Map API endpoints
 	app.use(routes)
 
+	// Map API documentation
+	const swagger = require('./swagger')
+	app.use(swagger)
+
 	app.listen(port, () =>
 		console.log(`server listening on port ${port}!`)
 	)

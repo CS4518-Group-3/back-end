@@ -5,9 +5,22 @@ const User = require('../models/user')
 const CLIENT_ID = process.env.GOOGLE_OAUTH_ID
 const oauth_client = new OAuth2Client(CLIENT_ID)
 
+/**
+ * @typedef AuthenticationResponse
+ * @property {boolean} authenticated - True if user is authenticated. False otherwise
+ * @property {User.model} user - User instance (if authenticated)
+ */
+
+/**
+ * @route GET /auth/check
+ * @group auth - User authentication and accout management
+ * @summary Check if user is currently authenticated. 
+ * @tags auth
+ * @returns {AuthenticationResponse.model} 200 - Includes user if authenticated
+ */
 router.get('/check', function(req, res){
 	if(req.session.authenticated) {
-		const response = Object.assign({authenticated: true}, req.session.user)
+		const response = Object.assign({authenticated: true}, {user: req.session.user})
 		res.json(response)
 	}
 	else {
@@ -15,6 +28,16 @@ router.get('/check', function(req, res){
 	}
 })
 
+/**
+ * @route GET /auth/callback
+ * @group auth
+ * @summary Validates a user with Google credentials. Creates a new account if no matching account exists
+ * @param {string} id_token.query.required - Google OAuth2 idToken.
+ * @returns {AuthenticationResponse.model} 200 - Successful login
+ * @returns {AuthenticationResponse.model} 201 - New user account was created and authenticated
+ * @returns {Error.model} 400 - id_token is missing, invalid, or expired
+ * @returns {Error.model} 500 - Unable to verify with Google, or persist new user account
+ */
 router.get('/callback', async function(req, res){
 	const {id_token} = req.query
 	if (id_token == undefined) {
@@ -40,9 +63,20 @@ router.get('/callback', async function(req, res){
 	}
 	req.session.user = user
 	req.session.authenticated = true
-	res.json(user.toJSON())
+	const result = Object.assign({authenticated: true}, {user: user.toJSON()})
+	res.json(result)
 })
 
+
+/**
+ * @route DELETE /auth/account
+ * @group auth
+ * @summary Deletes the account of the attached user session
+ * @returns 200 - Account deleted successfully
+ * @returns {Error.model} 500 - Error deleting user
+ * @returns {Error.model} 400 - Unable to find user attached to session
+ * @security cookieAuth
+ */
 router.delete('/account', async function(req, res){
 	const {user} = req.session
 	if(user === undefined || user._id === undefined) {
@@ -61,6 +95,13 @@ router.delete('/account', async function(req, res){
 	res.status(200).send()
 })
 
+/**
+ * @route GET /auth/signout
+ * @group auth
+ * @summary Signs out user
+ * @returns 200 - Sign out successful
+ * @security cookieAuth
+ */
 router.get('/signout', function(req, res){
 	req.session.destroy()
 	res.status(200).send()

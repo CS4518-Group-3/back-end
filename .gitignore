@@ -1,3 +1,5 @@
 node_modules
 .env
 .vscode
+write_docs.sh
+gen_docs.sh
