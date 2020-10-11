@@ -57,14 +57,19 @@ router.get('/callback', async function(req, res){
 	const ginfo = ticket.getPayload()
 
 	let user = await User.findOne({google_id: ginfo.sub})
+	let new_user = false
 	if(user == null) {
-		user = new User({google_id: ginfo.sub, email: ginfo.email, name: (ginfo.name || 'Unnamed User')})
+		new_user = true
+		user = new User({google_id: ginfo.sub, email: ginfo.email, name: (ginfo.name || 'Unnamed User'), profile_url: ginfo.picture})
 		await user.save().catch((err) => {res.status(500).json({error: err}); return})
 	}
 	req.session.user = user
 	req.session.authenticated = true
 	const result = Object.assign({authenticated: true}, {user: user.toJSON()})
-	res.json(result)
+	if(new_user)
+		res.status(201).json(result)
+	else
+		res.json(result)
 })
 
 
