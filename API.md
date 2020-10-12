@@ -1,7 +1,7 @@
 # ArtsyApp API Documentation
 API Documentation for CS4518 Group 3 final project.
 
-## Version: 0.1.0
+## Version: 0.2.0
 
 **License:** MIT
 
