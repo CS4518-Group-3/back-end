@@ -3,3 +3,4 @@ node_modules
 .vscode
 write_docs.sh
 gen_docs.sh
+yarn-error.log

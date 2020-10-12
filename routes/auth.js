@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const {OAuth2Client} = require('google-auth-library')
-const User = require('../models/user')
+const User = require('../models').User
 
 const CLIENT_ID = process.env.GOOGLE_OAUTH_ID
 const oauth_client = new OAuth2Client(CLIENT_ID)
@@ -17,11 +17,14 @@ const oauth_client = new OAuth2Client(CLIENT_ID)
  * @summary Check if user is currently authenticated. 
  * @tags auth
  * @returns {AuthenticationResponse.model} 200 - Includes user if authenticated
+ * @returns {Error} 500 - Failed to retrieve user by the id attached to their session
  */
 router.get('/check', function(req, res){
 	if(req.session.authenticated) {
-		const response = Object.assign({authenticated: true}, {user: req.session.user})
-		res.json(response)
+		User.findById(req.session.user._id).then((user) => {
+			const data = Object.assign({authenticated: true}, user.as_view())
+			res.json(data)
+		}).catch((err) => {res.status(500).json({error: err})})
 	}
 	else {
 		res.json({authenticated: false})
@@ -41,7 +44,7 @@ router.get('/check', function(req, res){
 router.get('/callback', async function(req, res){
 	const {id_token} = req.query
 	if (id_token == undefined) {
-		res.status(400).json({error: 'OAuth id_token parameter required'})
+		res.status(400).json({error: 'OAuth id_token parameter required.'})
 		return
 	}
 	const ticket = await oauth_client.verifyIdToken({idToken: id_token, audience: CLIENT_ID})
@@ -65,13 +68,12 @@ router.get('/callback', async function(req, res){
 	}
 	req.session.user = user
 	req.session.authenticated = true
-	const result = Object.assign({authenticated: true}, {user: user.toJSON()})
+	const result = Object.assign({authenticated: true}, {user: user.as_view()})
 	if(new_user)
 		res.status(201).json(result)
 	else
 		res.json(result)
 })
-
 
 /**
  * @route DELETE /auth/account
