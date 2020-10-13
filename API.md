@@ -1,7 +1,7 @@
 # ArtsyApp API Documentation
 API Documentation for CS4518 Group 3 final project.
 
-## Version: 0.2.0
+## Version: 0.2.1
 
 **License:** MIT
 
@@ -128,7 +128,7 @@ Creates a new post from the user's current location and drawing bitmap.
 | ---- | ---------- | ----------- | -------- | ---- |
 | lat | required | Latitude coordinate for Post | No | float |
 | lon | required | Longitude coordinate for Post | No | float |
-| content | required | Raw bitmap data of drawing | No | content |
+| content | required | Raw bitmap data of drawing | No | string |
 
 ##### Responses
 
@@ -213,7 +213,7 @@ Downvotes as authenticated user. Acts as an unvote if user has already downvoted
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | The user's new vote_status for the post |  |
+| 200 | The post score along with user's new vote_status for the post | [Vote](#vote) |
 | 403 |  | [Error](#error) |
 | 404 | Post not found | [Error](#error) |
 | 500 | Error processing request | [Error](#error) |
@@ -243,7 +243,7 @@ Upvotes as authenticated user. Acts as an unvote if user has already upvoted, an
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | The user's new vote_status for the post |  |
+| 200 | The post score along with user's new vote_status for the post | [Vote](#vote) |
 | 403 |  | [Error](#error) |
 | 404 | Post not found | [Error](#error) |
 | 500 | Error processing request | [Error](#error) |
@@ -338,3 +338,10 @@ Paginates through a feed of posts around the specified coordinates
 | name | string | Full name of user <br>_Example:_ `"John Doe"` | Yes |
 | profile_url | string | URL to profile picture of corresponding Google Account | No |
 | updated_at | string | Date last updated <br>_Example:_ `"2020-10-06 19:50:14.217Z"` | Yes |
+
+#### Vote
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| score | integer | The current net between upvotes and downvotes on corresponding post | Yes |
+| vote_status | string | The vote status for the requesting user on corresponding post (unvoted/upvoted/downvoted) <br>_Enum:_ `"0"`, `"1"`, `"2"` | Yes |

@@ -69,7 +69,7 @@ router.param('id', function(req, res, next, id){
 		}
 		req.post = result
 		next()
-	})
+	}).catch(() => {res.status(500).json({error: `Unable to retrieve post with the following id: ${id}`})})
 })
 
 // General method to handle upvote/downvote requests
@@ -83,7 +83,7 @@ const vote_handler = function(on_state, vote_method){
 		else
 			vote_method.call(post, uid)
 		post.save().then((result) => {
-			res.json({vote_status: result.vote_status(uid)})
+			res.json({vote_status: result.vote_status(uid), score: result.score})
 		}).catch((err) => {
 			res.status(500).json({error: err})
 		})
@@ -98,7 +98,7 @@ const vote_handler = function(on_state, vote_method){
  * @summary Creates a new post from the user's current location and drawing bitmap.
  * @param {float} lat.required - Latitude coordinate for Post
  * @param {float} lon.required - Longitude coordinate for Post
- * @param {content} content.required - Raw bitmap data of drawing
+ * @param {string} content.required - Raw bitmap data of drawing
  * @returns {Post.model} 201 - Post created successfully
  * @returns {Error.model} 400 - Missing required parameters
  * @returns {Error.model} 500 - Unable to create post (backend error)
@@ -121,7 +121,7 @@ router.post('/', auth, validate_body(['lat', 'lon', 'content']), function(req, r
  * @group post
  * @summary Upvotes as authenticated user. Acts as an unvote if user has already upvoted, and removes downvote if applicable.
  * @param {string} id.required - ID of post to upvote
- * @returns {integer} 200 - The user's new vote_status for the post
+ * @returns {Vote.model} 200 - The post score along with user's new vote_status for the post
  * @returns {Error.model} 403
  * @returns {Error.model} 404 - Post not found
  * @returns {Error.model} 500 - Error processing request
@@ -134,7 +134,7 @@ router.get('/:id/upvote', auth, vote_handler(1, Post.schema.methods.upvote))
  * @group post
  * @summary Downvotes as authenticated user. Acts as an unvote if user has already downvoted, and removes upvote if applicable.
  * @param {string} id.required - ID of post to upvote
- * @returns {integer} 200 - The user's new vote_status for the post
+ * @returns {Vote.model} 200 - The post score along with user's new vote_status for the post
  * @returns {Error.model} 403
  * @returns {Error.model} 404 - Post not found
  * @returns {Error.model} 500 - Error processing request

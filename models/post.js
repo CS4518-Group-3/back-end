@@ -3,6 +3,12 @@ var aggregate_paginate = require('mongoose-aggregate-paginate-v2')
 const voting = require('mongoose-voting')
 const Point = require('./geo')
 
+/**
+ * @typedef Vote
+ * @summary a Vote response including the net "score" of a post, as well as the vote status of the requesting user.
+ * @property {enum} vote_status.required - The vote status for the requesting user on corresponding post (unvoted/upvoted/downvoted) - eg: 0,1,2
+ * @property {integer} score.required - The current net between upvotes and downvotes on corresponding post
+ */
 
 /**
  * @typedef Post
