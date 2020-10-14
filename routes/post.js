@@ -251,6 +251,7 @@ router.get('/:id', function(req, res){
  * @security cookieAuth
  */
 router.delete('/:id', function(req, res){
+	const post = req.post
 	if(post.user_id != req.user_id){
 		res.status(403).send({error: 'You are unauthorized to delete this post'})
 		return
