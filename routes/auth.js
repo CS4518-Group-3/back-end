@@ -22,7 +22,7 @@ const oauth_client = new OAuth2Client(CLIENT_ID)
 router.get('/check', function(req, res){
 	if(req.session.authenticated) {
 		User.findById(req.session.user._id).then((user) => {
-			const data = Object.assign({authenticated: true}, user.as_view())
+			const data = {authenticated: true, user: user.as_view()}
 			res.json(data)
 		}).catch((err) => {res.status(500).json({error: err})})
 	}

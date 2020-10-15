@@ -1,7 +1,7 @@
 # ArtsyApp API Documentation
 API Documentation for CS4518 Group 3 final project.
 
-## Version: 0.2.2
+## Version: 0.3.0
 
 **License:** MIT
 
@@ -289,6 +289,35 @@ Paginates through a feed of posts around the specified coordinates
 | --- | --- |
 | cookieAuth | |
 
+### /post/user
+
+#### GET
+##### Summary
+
+Retrieves all posts created by the reqesting user (pagination optional)
+
+##### Description
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| page | get | Page number for pagination | No | integer |
+| limit | get | Number of entries sent per page | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Resulting page of feed | [ [Post.model](#postmodel) ] |
+| 500 | Unable to request feed (backend error) | [Error](#error) |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| cookieAuth | |
+
 ### Models
 
 #### AuthenticationResponse
@@ -318,7 +347,7 @@ Paginates through a feed of posts around the specified coordinates
 | content | string | Raw image data of drawing (base64) | Yes |
 | created_at | string | Date created <br>_Example:_ `"2020-10-06 15:25:58.542Z"` | No |
 | distance | float | Distance to user (only provided if querying from feed) <br>_Example:_ `"41.2"` | No |
-| distance_unit | float | Unit for the distance field (only provided if querying from feed) <br>_Example:_ `"mi"` | No |
+| distance_unit | string | Unit for the distance field (only provided if querying from feed) <br>_Example:_ `"mi"` | No |
 | id | string | ID of the post <br>_Example:_ `"5d7d52e543be22485d393712"` | Yes |
 | lat | float | Latitude coordinate where post was created <br>_Example:_ `"-71.8081"` | Yes |
 | lon | float | Longitude coordinate where post was created <br>_Example:_ `"42.2743"` | Yes |

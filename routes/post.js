@@ -1,7 +1,6 @@
 const router = require('express').Router()
 const {Post, Point} = require('../models')
 const Types = require('mongoose').Types
-const post = require( '../models/post' )
 
 // Approximate conversion factors to meters from Miles and Kilometers:
 const METERS_MI = 1609.344
@@ -222,6 +221,39 @@ router.get('/feed', auth, validate_query(['lat', 'lon', 'radius', 'unit']), conv
 			res.json(data)
 		}).catch((err) => {res.status(500).json({error: err})})
 	})
+
+
+/**
+ * @route GET /post/user
+ * @group post
+ * @summary Retrieves all posts created by the reqesting user (pagination optional)
+ * @param {integer} page - Page number for pagination
+ * @param {integer} limit - Number of entries sent per page
+ * @returns {Array.<Post.model>} 200 - Resulting page of feed
+ * @returns {Error.model} 500 - Unable to request feed (backend error)
+ * @security cookieAuth
+ */
+router.get('/user', auth, function(req, res){
+	let {page, limit} = req.query
+	let page_opts
+	// If neither page nor limit are specified, respond with all results
+	if(page === undefined && limit === undefined){
+		page_opts = {pagination: false}
+	}
+	// Otherwise if either is not specified, use default values.
+	else {
+		page_opts = {page: parseInt(page) || 1, limit: parseInt(limit) || 10}
+	}
+
+	const aggregate = Post.aggregate([{$match: {'user_id': Types.ObjectId(req.user_id)} }])
+	const options = Object.assign(page_opts, {sort: {'updatedAt': 'desc'}})
+	Post.aggregatePaginate(aggregate, options).then((results) => {
+		const data = results.docs.map((doc) => {
+			return Post.schema.methods.as_view.call(Post.hydrate(doc), req.user_id)
+		})
+		res.json(data)
+	}).catch((err) => {res.status(500).json({error: err})})
+})
 
 /**
  * @route GET /post/:id

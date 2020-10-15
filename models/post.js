@@ -21,7 +21,7 @@ const Point = require('./geo')
  * @property {integer} score.required - Net score of upvotes and downvotes
  * @property {enum} vote_status - Vote status for user making call (unvoted/upvoted/downvoted) - eg: 0,1,2
  * @property {float} distance - Distance to user (only provided if querying from feed) - eg: 41.2
- * @property {float} distance_unit - Unit for the distance field (only provided if querying from feed) - eg: mi
+ * @property {string} distance_unit - Unit for the distance field (only provided if querying from feed) - eg: mi
  * @property {string} created_at - Date created - eg:2020-10-06 15:25:58.542Z
  * @property {string} updated_at - Date last updated - eg:2020-10-06 19:50:14.217Z
  */
