@@ -38,7 +38,7 @@ const postSchema = mongoose.Schema({
 		required: true
 	},
 	content: {
-		type: Buffer,
+		type: String,
 		required: true,
 	},
 	score: {
@@ -84,7 +84,7 @@ postSchema.methods.as_view = function(user_id=null, agg_fields = {}){
 		data.vote_status = this.vote_status(user_id)
 	}
 	Object.assign(data, agg_fields)
-	data.content = this.content.toString('base64')
+	data.content = this.content
 	data.lon = data.location.coordinates[0]
 	data.lat = data.location.coordinates[1]
 	delete data.location
